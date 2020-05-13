@@ -6,7 +6,7 @@ TOKEN = os.environ.get("API_KEY")
 memorizer = telebot.TeleBot(TOKEN)
 
 
-@memorizer.message_handler(commands=["/start", "/help"])
+@memorizer.message_handler(commands=["start", "help"])
 def info(message):
     print(f"Sending help to {message.chat.id}")
     memorizer.send_message(message.chat.id, """
