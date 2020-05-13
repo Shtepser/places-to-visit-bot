@@ -8,6 +8,7 @@ memorizer = telebot.TeleBot(TOKEN)
 
 @memorizer.message_handler(commands=["/start", "/help"])
 def info(message):
+    print(f"Replying to {message.chat.id}")
     memorizer.reply_to(message, """
     Вас приветствует Запоминатель Мест версии 0.1!
     Используйте его для запоминания информации о местах, которые хотели бы посетить в будущем.
