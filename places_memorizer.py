@@ -1,13 +1,14 @@
+import os
+
 import telebot
 
 
-def get_token():
-    with open("token.tkn") as token_file:
-        token = token_file.read()
-    return token
+TOKEN = os.environ.get("API_KEY")
+memorizer = telebot.TeleBot(TOKEN)
+print(TOKEN)
+memorizer.polling(none_stop=True)
 
 
-if __name__ == "__main__":
-    TOKEN = get_token()
-    print(TOKEN)
-
+@memorizer.message_handler()
+def echo(message):
+    memorizer.reply_to(message, message.text)

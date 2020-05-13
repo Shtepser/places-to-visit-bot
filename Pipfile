@@ -4,9 +4,13 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pysocks = "*"
+requests = {extras = ["socks"],version = "*"}
+urllib3 = "*"
+gunicorn = "*"
 
 [packages]
-telebot = "*"
+pytelegrambotapi = "*"
 
 [requires]
 python_version = "3.8"

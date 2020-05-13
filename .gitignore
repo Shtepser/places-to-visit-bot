@@ -130,3 +130,6 @@ dmypy.json
 
 # Telegram bot tokens
 *.tkn
+
+# PyCharm files
+.idea/
