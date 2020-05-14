@@ -1,4 +1,5 @@
 import os
+from random import choice
 from textwrap import dedent
 
 import telebot
@@ -46,7 +47,7 @@ def is_marking_place_as_visited(user_id):
     return db.get_user_stage(user_id) is Stage.MARKING_PLACE_AS_VISITED
 
 
-def create_places_keyboard(places, page=0):
+def places_keyboard(places, page=0):
     keyboard = InlineKeyboardMarkup(row_width=1)
     if page != 0:
         keyboard.add(InlineKeyboardButton(text="Предыдущие места",
@@ -57,6 +58,20 @@ def create_places_keyboard(places, page=0):
         keyboard.add(InlineKeyboardButton(text="Следующие места",
                                           callback_data=f'to_page_{page + 1}'))
     return keyboard
+
+
+def send_places_list(user_id):
+    places = db.get_places(user_id)
+    if places:
+        memorizer.send_message(user_id, "Ваши запомненные места",
+                               reply_markup=places_keyboard(places))
+    else:
+        memorizer.send_message(user_id, "Вы ещё не запомнили никаких мест")
+
+
+def send_place_info(user_id, place):
+    memorizer.send_message(user_id, f"Карта для {place.name}")
+    memorizer.send_location(user_id, place.lat, place.lon)
 
 
 @memorizer.callback_query_handler(func=lambda query: is_asking_for_reset(query.message.chat.id))
@@ -78,7 +93,7 @@ def show_places_page(callback_query):
         places = db.get_places(callback_query.message.chat.id)
         memorizer.answer_callback_query(callback_query.id)
         memorizer.send_message(callback_query.message.chat.id, "Ваши запомненные места",
-                               reply_markup=create_places_keyboard(places, target_page))
+                               reply_markup=places_keyboard(places, target_page))
 
 
 @memorizer.callback_query_handler(func=lambda query:
@@ -86,8 +101,7 @@ def show_places_page(callback_query):
 def show_map_for_place(callback_query):
     user_id = callback_query.message.chat.id
     place = db.get_place_by_name(user_id, callback_query.data)
-    memorizer.send_message(user_id, f"Карта для {place.name}")
-    memorizer.send_location(user_id, place.lat, place.lon)
+    send_place_info(user_id, place)
     memorizer.answer_callback_query(callback_query.id, f"Чтобы показать другие места, "
                                                        f"начните новый поиск командой /list")
     db.set_user_stage(user_id, Stage.START)
@@ -165,13 +179,11 @@ def visited(message):
     send_places_list(message.chat.id)
 
 
-def send_places_list(user_id):
-    places = db.get_places(user_id)
-    if places:
-        memorizer.send_message(user_id, "Ваши запомненные места",
-                               reply_markup=create_places_keyboard(places))
-    else:
-        memorizer.send_message(user_id, "Вы ещё не запомнили никаких мест")
+@memorizer.message_handler(commands=["random"])
+def send_random_place(message):
+    print(f"Sending random place to {message.chat.id}")
+    place = choice(db.get_places(message.chat.id))
+    send_place_info(message.chat.id, place)
 
 
 @memorizer.message_handler(commands=["reset"])
