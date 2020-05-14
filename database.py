@@ -16,8 +16,8 @@ class Database:
     def has_user(self, user_id) -> bool:
         return bool(self.__places.smembers(user_id)) and self.__stages.get(user_id) is not None
 
-    def add_place(self, user_id, place: Place) -> bool:
-        return bool(self.__places.sadd(user_id, repr(place)))
+    def add_place(self, user_id, place: Place):
+        self.__places.sadd(user_id, repr(place))
 
     def get_places(self, user_id) -> list:
         return [Place.from_string(place.decode("utf8"))
@@ -26,11 +26,12 @@ class Database:
     def remove_place(self, user_id, place: Place):
         return self.__places.srem(user_id, repr(place)) == 1
 
-    def reset_user(self, user_id) -> bool:
-        return self.__places.delete(user_id) == 1 and self.__stages.delete(user_id) == 1
+    def reset_user(self, user_id):
+        self.__places.delete(user_id)
+        self.__stages.delete(user_id)
 
     def set_user_stage(self, user_id, stage: Stage):
-        return self.__stages.set(user_id, stage.value)
+        self.__stages.set(user_id, stage.value)
 
     def get_user_stage(self, user_id):
         stage_code = self.__stages.get(user_id)
@@ -39,7 +40,7 @@ class Database:
         return Stage(int(stage_code))
 
     def set_staged_place_name(self, user_id, place_name):
-        return self.__stages.set(f"staged_name_{user_id}", place_name) == 1
+        self.__stages.set(f"staged_name_{user_id}", place_name)
 
     def get_staged_place_name(self, user_id):
         staged_name = self.__stages.get(f"staged_name_{user_id}")
@@ -48,4 +49,4 @@ class Database:
         return None
 
     def clean_staged_place_name(self, user_id):
-        return self.__stages.delete(f"staged_name_{user_id}") == 1
+        self.__stages.delete(f"staged_name_{user_id}")
