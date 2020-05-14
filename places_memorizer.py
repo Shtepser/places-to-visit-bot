@@ -65,7 +65,10 @@ def add_place_location(message):
 def list_places(message):
     print(f"Listing places for {message.chat.id}")
     places = db.get_places(message.chat.id)
-    memorizer.send_message(message.chat.id, '\n'.join(place.name for place in places))
+    if places:
+        memorizer.send_message(message.chat.id, '\n'.join(place.name for place in places))
+    else:
+        memorizer.send_message(message.chat.id, "Вы ещё не запомнили никаких мест")
 
 
 @memorizer.message_handler(commands=["reset"])
@@ -85,15 +88,13 @@ def ask_for_reset(message):
                                   db.get_user_stage(callback_query.message.chat.id) is
                                   Stage.ASKING_FOR_RESET)
 def confirm_request(callback_query):
-    print(callback_query.message)
-    print(callback_query.data)
     if callback_query.data == 'confirm':
-        print(f"User {callback_query.message.chat.id} successfully reset his places")
         db.reset_user(callback_query.message.chat.id)
         memorizer.answer_callback_query(callback_query.id, "Вы успешно удалили всю свою информацию")
+        print(f"User {callback_query.message.chat.id} successfully reset his places")
     else:
-        memorizer.answer_callback_query(callback_query.id, "Вы отменили удаление информации")
         db.set_user_stage(callback_query.message.chat.id, Stage.START)
+        memorizer.answer_callback_query(callback_query.id, "Вы отменили удаление информации")
         print(f"User {callback_query.message.chat.id} cancel resetting")
 
 
