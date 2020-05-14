@@ -33,7 +33,10 @@ class Database:
         return self.__stages.set(user_id, stage.value)
 
     def get_user_stage(self, user_id):
-        return Stage(int(self.__stages.get(user_id)))
+        stage_code = self.__stages.get(user_id)
+        if not stage_code:
+            return None
+        return Stage(int(stage_code))
 
     def set_staged_place_name(self, user_id, place_name):
         return self.__stages.set(f"staged_name_{user_id}", place_name) == 1
