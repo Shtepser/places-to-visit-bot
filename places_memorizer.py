@@ -13,7 +13,7 @@ TOKEN = os.environ.get("API_KEY")
 db = Database()
 memorizer = telebot.TeleBot(TOKEN)
 
-PLACES_PER_PAGE = 3
+PLACES_PER_PAGE = 5
 
 INFO_TEXT = dedent("""
     Вас приветствует Запоминатель Мест версии 0.1!
