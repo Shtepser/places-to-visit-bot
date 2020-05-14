@@ -82,16 +82,18 @@ def ask_for_reset(message):
 
 
 @memorizer.callback_query_handler(func=lambda callback_query:
-                                  db.get_user_stage(callback_query.id) is Stage.ASKING_FOR_RESET)
+                                  db.get_user_stage(callback_query.message.chat.id) is
+                                  Stage.ASKING_FOR_RESET)
 def confirm_request(callback_query):
     print(callback_query.message)
     print(callback_query.data)
     if callback_query.data == 'confirm':
         print(f"User {callback_query.id} successfully reset his places")
         db.reset_user(callback_query.id)
-        memorizer.send_message(callback_query.id, "Вы успешно удалили всю свою информацию")
+        memorizer.answer_callback_query(callback_query.id, "Вы успешно удалили всю свою информацию")
     else:
-        db.set_user_stage(callback_query.id, Stage.START)
+        memorizer.answer_callback_query(callback_query.id, "Вы отменили удаление информации")
+        db.set_user_stage(callback_query.message.chat.id, Stage.START)
         print(f"User {callback_query.id} cancel resetting")
 
 
