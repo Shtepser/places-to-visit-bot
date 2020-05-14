@@ -56,6 +56,7 @@ def add_place_location(message):
         memorizer.reply_to(message, "Некорректное местоположение! Попробуйте ещё раз")
         return
     lat, lon = message.location.latitude, message.location.longitude
+    print(lat, lon)
     name = db.get_staged_place_name(message.chat.id)
     db.add_place(message.chat.id, Place(name, lat, lon))
     db.clean_staged_place_name(message.chat.id)
