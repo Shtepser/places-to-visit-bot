@@ -88,7 +88,8 @@ def show_map_for_place(callback_query):
     place = db.get_place_by_name(user_id, callback_query.data)
     memorizer.send_message(user_id, f"Карта для {place.name}")
     memorizer.send_location(user_id, place.lat, place.lon)
-    memorizer.answer_callback_query(callback_query.id)
+    memorizer.answer_callback_query(callback_query.id, f"Чтобы показать другие места, "
+                                                       f"начните новый поиск командой /list")
     db.set_user_stage(user_id, Stage.START)
 
 
@@ -97,7 +98,9 @@ def show_map_for_place(callback_query):
 def mark_place_as_visited(callback_query):
     user_id = callback_query.message.chat.id
     place = db.get_place_by_name(user_id, callback_query.data)
-    memorizer.answer_callback_query(callback_query.id, f"Вы посетили {place.name}")
+    memorizer.answer_callback_query(callback_query.id, f"Вы посетили {place.name}."
+                                                       f"Чтобы посетить ещё одно место, "
+                                                       f"начните новый поиск командой /visited")
     db.remove_place(user_id, place)
     db.set_user_stage(user_id, Stage.START)
 
@@ -156,7 +159,7 @@ def list_places(message):
 
 
 @memorizer.message_handler(commands=["visited"])
-def mark_as_visited(message):
+def visited(message):
     print(f"Marking place as visited for {message.chat.id}")
     db.set_user_stage(message.chat.id, Stage.MARKING_PLACE_AS_VISITED)
     send_places_list(message.chat.id)
