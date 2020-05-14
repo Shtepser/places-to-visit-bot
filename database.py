@@ -9,10 +9,10 @@ from Stage import Stage
 class Database:
 
     def __init__(self):
-        redis_url = os.environ.get("REDIS_URL")
-        self.__places = redis.from_url(redis_url, db=0)
-        self.__stages = redis.from_url(redis_url, db=1)
-        self.__staged_place_names = redis.from_url(redis_url, db=2)
+        redis_path = os.environ.get("REDIS_URL")
+        self.__places = redis.from_url(redis_path, db=0)
+        self.__stages = redis.from_url(redis_path, db=1)
+        self.__staged_place_names = redis.from_url(redis_path, db=2)
 
     def has_user(self, user_id) -> bool:
         return bool(self.__places.smembers(user_id)) and self.__stages.get(user_id) is not None
