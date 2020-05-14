@@ -89,11 +89,10 @@ def confirm_reset(callback_query):
 @memorizer.callback_query_handler(func=lambda query: query.data.startswith("to_page_"))
 def show_places_page(callback_query):
     target_page = int(callback_query.data.lstrip("to_page_"))
-    if target_page:
-        places = db.get_places(callback_query.message.chat.id)
-        memorizer.answer_callback_query(callback_query.id)
-        memorizer.send_message(callback_query.message.chat.id, "Ваши запомненные места",
-                               reply_markup=places_keyboard(places, target_page))
+    places = db.get_places(callback_query.message.chat.id)
+    memorizer.answer_callback_query(callback_query.id)
+    memorizer.send_message(callback_query.message.chat.id, "Ваши запомненные места",
+                           reply_markup=places_keyboard(places, target_page))
 
 
 @memorizer.callback_query_handler(func=lambda query:
