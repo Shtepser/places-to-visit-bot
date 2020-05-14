@@ -60,6 +60,13 @@ def add_place_location(message):
     db.set_user_stage(message.chat.id, Stage.START)
 
 
+@memorizer.message_handler(commands=["list"])
+def list_places(message):
+    print(f"Listing places for {message.chat.id}")
+    places = db.get_places(message.chat.id)
+    memorizer.send_message(message.chat.id, '\n'.join(place.name for place in places))
+
+
 @memorizer.message_handler(func=lambda x: True)
 def echo(message):
     print(f"Echoing to {message.chat.id}")
