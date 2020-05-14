@@ -9,10 +9,9 @@ from Stage import Stage
 class Database:
 
     def __init__(self):
-        redis_path = os.environ.get("REDIS_URL")
-        self.__places = redis.from_url(redis_path, db=0)
-        self.__stages = redis.from_url(redis_path, db=1)
-        self.__staged_place_names = redis.from_url(redis_path, db=2)
+        redis_URL = os.environ.get("REDIS_URL")
+        self.__places = redis.from_url(redis_URL, db=0)
+        self.__stages = redis.from_url(redis_URL, db=1)
 
     def has_user(self, user_id) -> bool:
         return bool(self.__places.smembers(user_id)) and self.__stages.get(user_id) is not None
@@ -37,13 +36,13 @@ class Database:
         return Stage(int(self.__stages.get(user_id)))
 
     def set_staged_place_name(self, user_id, place_name):
-        return self.__staged_place_names.set(user_id, place_name) == 1
+        return self.__stages.set(f"staged_name_{user_id}", place_name) == 1
 
     def get_staged_place_name(self, user_id):
-        staged_name = self.__staged_place_names.get(user_id)
+        staged_name = self.__stages.get(f"staged_name_{user_id}")
         if staged_name:
             return staged_name.decode("utf8")
         return None
 
     def clean_staged_place_name(self, user_id):
-        return self.__staged_place_names.delete(user_id) == 1
+        return self.__stages.delete(f"staged_name_{user_id}") == 1
