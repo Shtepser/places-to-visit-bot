@@ -88,13 +88,13 @@ def confirm_request(callback_query):
     print(callback_query.message)
     print(callback_query.data)
     if callback_query.data == 'confirm':
-        print(f"User {callback_query.id} successfully reset his places")
-        db.reset_user(callback_query.id)
+        print(f"User {callback_query.message.chat.id} successfully reset his places")
+        db.reset_user(callback_query.message.chat.id)
         memorizer.answer_callback_query(callback_query.id, "Вы успешно удалили всю свою информацию")
     else:
         memorizer.answer_callback_query(callback_query.id, "Вы отменили удаление информации")
         db.set_user_stage(callback_query.message.chat.id, Stage.START)
-        print(f"User {callback_query.id} cancel resetting")
+        print(f"User {callback_query.message.chat.id} cancel resetting")
 
 
 @memorizer.message_handler(func=lambda x: True)
