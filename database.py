@@ -25,6 +25,9 @@ class Database:
         return [Place.from_string(self.__places.hget(user_id, key).decode("utf8"))
                 for key in self.__places.hkeys(user_id)]
 
+    def get_place_by_name(self, user_id, place_name):
+        return Place.from_string(self.__places.hget(user_id, place_name).decode("utf8"))
+
     def remove_place(self, user_id, place: Place):
         self.__places.hdel(user_id, place.name)
 

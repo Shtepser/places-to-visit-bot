@@ -24,6 +24,8 @@ class DatabaseTestCase(unittest.TestCase):
         places = self.db.get_places(1)
         self.assertIn(Place("Good restaurant", 65.13, 66.14), places)
         self.assertIn(Place("Very Good restaurant", 62.12, 66.14), places)
+        self.assertEqual(self.db.get_place_by_name(1, "Good restaurant"),
+                         Place("Good restaurant", 65.13, 66.14))
 
     def test_removing_user(self):
         self.db.set_user_stage(1, Stage.START)
