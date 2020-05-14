@@ -81,8 +81,8 @@ def ask_for_reset(message):
                            reply_markup=keyboard)
 
 
-@memorizer.callback_query_handler(func=lambda message:
-                                  db.get_user_stage(message.chat.id) is Stage.ASKING_FOR_RESET)
+@memorizer.callback_query_handler(func=lambda callback_query:
+                                  db.get_user_stage(callback_query.id) is Stage.ASKING_FOR_RESET)
 def confirm_request(callback_query):
     print(callback_query.message)
     print(callback_query.data)
