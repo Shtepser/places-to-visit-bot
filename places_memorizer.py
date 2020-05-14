@@ -31,7 +31,7 @@ def info(message):
 def add(message):
     print(f"Started adding place with {message.chat.id}")
     memorizer.send_message(message.chat.id, dedent("""
-    Пришлите название нового места, которое Вы хотите запомнить."""))
+    Пришлите название нового места, которое Вы хотите запомнить"""))
     db.set_user_stage(message.chat.id, Stage.ADDING_PLACE_NAME)
 
 
@@ -39,21 +39,27 @@ def add(message):
                            db.get_user_stage(message.chat.id) is Stage.ADDING_PLACE_NAME)
 def add_place_name(message):
     print(f"Adding place name with {message.chat.id}")
+    if message.content_type != "text":
+        memorizer.reply_to(message, "Некорректное название! Попробуйте ещё раз")
+        return
     db.set_staged_place_name(message.chat.id, message.text)
     db.set_user_stage(message.chat.id, Stage.ADDING_PLACE_LOCATION)
     memorizer.send_message(message.chat.id,  dedent("""
-    Теперь пришлите местоположение нового места."""))
+    Теперь пришлите местоположение нового места"""))
 
 
 @memorizer.message_handler(func=lambda message:
                            db.get_user_stage(message.chat.id) is Stage.ADDING_PLACE_LOCATION)
 def add_place_location(message):
     print(f"Adding place location with {message.chat.id}")
-    lat, lon = 65.12, 64.12
+    if message.content_type != "location":
+        memorizer.reply_to(message, "Некорректное местоположение! Попробуйте ещё раз")
+        return
+    lat, lon = message.location.latitude, message.location.longitude
     name = db.get_staged_place_name(message.chat.id)
     db.add_place(message.chat.id, Place(name, lat, lon))
     db.clean_staged_place_name(message.chat.id)
-    memorizer.send_message(message.chat.id, "Новое место успешно добавлено!")
+    memorizer.send_message(message.chat.id, "Новое место успешно добавлено")
     db.set_user_stage(message.chat.id, Stage.START)
 
 
