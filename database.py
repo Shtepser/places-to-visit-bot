@@ -34,6 +34,7 @@ class Database:
     def reset_user(self, user_id):
         self.__places.delete(user_id)
         self.__stages.delete(user_id)
+        self.clean_staged_place_name(user_id)
 
     def set_user_stage(self, user_id, stage: Stage):
         self.__stages.set(user_id, stage.value)

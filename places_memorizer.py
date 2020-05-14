@@ -102,7 +102,18 @@ def mark_place_as_visited(callback_query):
     db.set_user_stage(user_id, Stage.START)
 
 
-@memorizer.message_handler(commands=["start", "help"])
+@memorizer.message_handler(commands=["start"])
+def start(message):
+    if db.has_user(message.chat.id):
+        print(f"Starting with user {message.chat.id}")
+        memorizer.send_message(message.chat.id, "С возвращением!")
+    else:
+        print(f"New user: {message.chat.id}")
+        memorizer.send_message(message.chat.id, "Добро пожаловать!\n" + INFO_TEXT)
+    db.set_user_stage(message.chat.id, Stage.START)
+
+
+@memorizer.message_handler(commands=["help"])
 def info(message):
     print(f"Sending help to {message.chat.id}")
     memorizer.send_message(message.chat.id, INFO_TEXT)
