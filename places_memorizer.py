@@ -11,11 +11,7 @@ TOKEN = os.environ.get("API_KEY")
 db = Database()
 memorizer = telebot.TeleBot(TOKEN)
 
-
-@memorizer.message_handler(commands=["start", "help"])
-def info(message):
-    print(f"Sending help to {message.chat.id}")
-    memorizer.send_message(message.chat.id, dedent("""
+INFO_TEXT = dedent("""
     Вас приветствует Запоминатель Мест версии 0.1!
     Используйте его для запоминания информации о местах, которые хотели бы посетить в будущем.
     Команды:
@@ -24,7 +20,13 @@ def info(message):
     /map - получить карту места для посещения
     /visited - отметить место как посещённое
     /reset - удалить все свои запомненные места
-    /help - показать эту справку"""))
+    /help - показать эту справку""")
+
+
+@memorizer.message_handler(commands=["start", "help"])
+def info(message):
+    print(f"Sending help to {message.chat.id}")
+    memorizer.send_message(message.chat.id, INFO_TEXT)
 
 
 @memorizer.message_handler(commands=["add"])
@@ -61,7 +63,8 @@ def add_place_location(message):
 @memorizer.message_handler(func=lambda x: True)
 def echo(message):
     print(f"Echoing to {message.chat.id}")
-    memorizer.send_message(message.chat.id, f"Неизвестная команда: {message.text}")
+    memorizer.send_message(message.chat.id, f"Неизвестная команда: {message.text}. Используйте "
+                                            f"/help, чтобы получить список всех команд.")
 
 
 memorizer.polling(none_stop=True)
