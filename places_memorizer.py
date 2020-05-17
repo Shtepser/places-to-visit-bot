@@ -3,7 +3,8 @@ from random import choice
 from textwrap import dedent
 
 import telebot
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup,\
+    KeyboardButton
 
 from Place import Place
 from Stage import Stage
@@ -45,6 +46,16 @@ def is_searching_place_to_visit(user_id):
 
 def is_marking_place_as_visited(user_id):
     return db.get_user_stage(user_id) is Stage.MARKING_PLACE_AS_VISITED
+
+
+def send_start_keyboard(user_id):
+    keyboard = ReplyKeyboardMarkup()
+    add_button = KeyboardButton("/add")
+    list_button = KeyboardButton("/list")
+    get_random_button = KeyboardButton("/random")
+    mark_visited_button = KeyboardButton("/visited")
+    keyboard.add(add_button, list_button, get_random_button, mark_visited_button)
+    memorizer.send_message(user_id, "Выберите дальнейшее действие", reply_markup=keyboard)
 
 
 def places_keyboard(places, page=0):
@@ -126,6 +137,7 @@ def start(message):
     else:
         print(f"New user: {message.chat.id}")
         memorizer.send_message(message.chat.id, "Добро пожаловать!\n" + INFO_TEXT)
+    send_start_keyboard(message.chat.id)
     db.set_user_stage(message.chat.id, Stage.START)
 
 
