@@ -181,8 +181,11 @@ def visited(message):
 @memorizer.message_handler(commands=["random"])
 def send_random_place(message):
     print(f"Sending random place to {message.chat.id}")
-    place = choice(db.get_places(message.chat.id))
-    send_place_info(message.chat.id, place)
+    places = db.get_places(message.chat.id)
+    if places:
+        send_place_info(message.chat.id, choice(places))
+    else:
+        memorizer.send_message(message.chat.id, "Вы ещё не запомнили никаких мест")
 
 
 @memorizer.message_handler(commands=["reset"])
