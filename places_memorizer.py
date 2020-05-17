@@ -205,4 +205,5 @@ def echo(message):
                                             f"/help, чтобы получить список всех команд.")
 
 
-memorizer.polling(none_stop=True)
+if __name__ == "__main__":
+    memorizer.polling(none_stop=True)
